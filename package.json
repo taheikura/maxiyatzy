@@ -1,0 +1,45 @@
+{
+  "name": "maxiyatzy",
+  "version": "1.0.0",
+  "description": "Maxi Yatzy online",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "rm -rf lib/models/*.dart && npx ampx generate graphql-client-code --format modelgen --model-target dart --out lib/models",
+    "sandbox": "npx ampx sandbox --outputs-format dart --outputs-out-dir lib",
+    "start": "flutter run -d chrome"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taheikura/maxiyatzy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/taheikura/maxiyatzy/issues"
+  },
+  "homepage": "https://github.com/taheikura/maxiyatzy#readme",
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.13.0",
+    "@aws-amplify/backend-cli": "^1.4.6",
+    "aws-cdk": "^2.175.1",
+    "aws-cdk-lib": "^2.175.1",
+    "constructs": "^10.4.2",
+    "esbuild": "^0.24.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "aws-amplify": "^6.12.0"
+  },
+  "volta": {
+    "node": "22.13.0",
+    "npm": "11.0.0"
+  }
+}
