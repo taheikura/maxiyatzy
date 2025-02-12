@@ -21,23 +21,36 @@
 
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'Game.dart';
-import 'Result.dart';
-import 'ResultUser.dart';
+import 'Score.dart';
+import 'ScoreSheet.dart';
 import 'User.dart';
+import 'Die.dart';
+import 'DieQuaternion.dart';
+import 'ScoreType.dart';
+import 'ThrowDiceResponse.dart';
+import 'Vector3.dart';
 
+export 'Die.dart';
+export 'DieQuaternion.dart';
+export 'EndTurnScoreType.dart';
 export 'Game.dart';
 export 'GameState.dart';
-export 'Result.dart';
-export 'ResultUser.dart';
+export 'GameTurnNumber.dart';
+export 'Score.dart';
+export 'ScoreSheet.dart';
+export 'ScoreType.dart';
+export 'ScoreTypeType.dart';
+export 'ThrowDiceResponse.dart';
 export 'User.dart';
+export 'Vector3.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "e042ef8945e130046e65c2a0d5c4a439";
+  String version = "8d3422796b394efd516d33fe521b8039";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Game.schema, Result.schema, ResultUser.schema, User.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [Game.schema, Score.schema, ScoreSheet.schema, User.schema];
   @override
-  List<amplify_core.ModelSchema> customTypeSchemas = [];
+  List<amplify_core.ModelSchema> customTypeSchemas = [Die.schema, DieQuaternion.schema, ScoreType.schema, ThrowDiceResponse.schema, Vector3.schema];
   static final ModelProvider _instance = ModelProvider();
 
   static ModelProvider get instance => _instance;
@@ -46,10 +59,10 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
     switch(modelName) {
       case "Game":
         return Game.classType;
-      case "Result":
-        return Result.classType;
-      case "ResultUser":
-        return ResultUser.classType;
+      case "Score":
+        return Score.classType;
+      case "ScoreSheet":
+        return ScoreSheet.classType;
       case "User":
         return User.classType;
       default:

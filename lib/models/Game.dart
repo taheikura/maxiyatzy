@@ -30,8 +30,11 @@ class Game extends amplify_core.Model {
   final String id;
   final String? _name;
   final GameState? _state;
-  final List<Result>? _results;
   final List<User>? _users;
+  final List<ScoreSheet>? _scoreSheet;
+  final User? _createdBy;
+  final User? _whosTurn;
+  final GameTurnNumber? _turnNumber;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -65,12 +68,24 @@ class Game extends amplify_core.Model {
     return _state;
   }
   
-  List<Result>? get results {
-    return _results;
-  }
-  
   List<User>? get users {
     return _users;
+  }
+  
+  List<ScoreSheet>? get scoreSheet {
+    return _scoreSheet;
+  }
+  
+  User? get createdBy {
+    return _createdBy;
+  }
+  
+  User? get whosTurn {
+    return _whosTurn;
+  }
+  
+  GameTurnNumber? get turnNumber {
+    return _turnNumber;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -81,15 +96,18 @@ class Game extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Game._internal({required this.id, required name, state, results, users, createdAt, updatedAt}): _name = name, _state = state, _results = results, _users = users, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Game._internal({required this.id, required name, state, users, scoreSheet, createdBy, whosTurn, turnNumber, createdAt, updatedAt}): _name = name, _state = state, _users = users, _scoreSheet = scoreSheet, _createdBy = createdBy, _whosTurn = whosTurn, _turnNumber = turnNumber, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Game({String? id, required String name, GameState? state, List<Result>? results, List<User>? users}) {
+  factory Game({String? id, required String name, GameState? state, List<User>? users, List<ScoreSheet>? scoreSheet, User? createdBy, User? whosTurn, GameTurnNumber? turnNumber}) {
     return Game._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       state: state,
-      results: results != null ? List<Result>.unmodifiable(results) : results,
-      users: users != null ? List<User>.unmodifiable(users) : users);
+      users: users != null ? List<User>.unmodifiable(users) : users,
+      scoreSheet: scoreSheet != null ? List<ScoreSheet>.unmodifiable(scoreSheet) : scoreSheet,
+      createdBy: createdBy,
+      whosTurn: whosTurn,
+      turnNumber: turnNumber);
   }
   
   bool equals(Object other) {
@@ -103,8 +121,11 @@ class Game extends amplify_core.Model {
       id == other.id &&
       _name == other._name &&
       _state == other._state &&
-      DeepCollectionEquality().equals(_results, other._results) &&
-      DeepCollectionEquality().equals(_users, other._users);
+      DeepCollectionEquality().equals(_users, other._users) &&
+      DeepCollectionEquality().equals(_scoreSheet, other._scoreSheet) &&
+      _createdBy == other._createdBy &&
+      _whosTurn == other._whosTurn &&
+      _turnNumber == other._turnNumber;
   }
   
   @override
@@ -118,6 +139,9 @@ class Game extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("state=" + (_state != null ? amplify_core.enumToString(_state)! : "null") + ", ");
+    buffer.write("createdBy=" + (_createdBy != null ? _createdBy!.toString() : "null") + ", ");
+    buffer.write("whosTurn=" + (_whosTurn != null ? _whosTurn!.toString() : "null") + ", ");
+    buffer.write("turnNumber=" + (_turnNumber != null ? amplify_core.enumToString(_turnNumber)! : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -125,27 +149,36 @@ class Game extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Game copyWith({String? name, GameState? state, List<Result>? results, List<User>? users}) {
+  Game copyWith({String? name, GameState? state, List<User>? users, List<ScoreSheet>? scoreSheet, User? createdBy, User? whosTurn, GameTurnNumber? turnNumber}) {
     return Game._internal(
       id: id,
       name: name ?? this.name,
       state: state ?? this.state,
-      results: results ?? this.results,
-      users: users ?? this.users);
+      users: users ?? this.users,
+      scoreSheet: scoreSheet ?? this.scoreSheet,
+      createdBy: createdBy ?? this.createdBy,
+      whosTurn: whosTurn ?? this.whosTurn,
+      turnNumber: turnNumber ?? this.turnNumber);
   }
   
   Game copyWithModelFieldValues({
     ModelFieldValue<String>? name,
     ModelFieldValue<GameState?>? state,
-    ModelFieldValue<List<Result>?>? results,
-    ModelFieldValue<List<User>?>? users
+    ModelFieldValue<List<User>?>? users,
+    ModelFieldValue<List<ScoreSheet>?>? scoreSheet,
+    ModelFieldValue<User?>? createdBy,
+    ModelFieldValue<User?>? whosTurn,
+    ModelFieldValue<GameTurnNumber?>? turnNumber
   }) {
     return Game._internal(
       id: id,
       name: name == null ? this.name : name.value,
       state: state == null ? this.state : state.value,
-      results: results == null ? this.results : results.value,
-      users: users == null ? this.users : users.value
+      users: users == null ? this.users : users.value,
+      scoreSheet: scoreSheet == null ? this.scoreSheet : scoreSheet.value,
+      createdBy: createdBy == null ? this.createdBy : createdBy.value,
+      whosTurn: whosTurn == null ? this.whosTurn : whosTurn.value,
+      turnNumber: turnNumber == null ? this.turnNumber : turnNumber.value
     );
   }
   
@@ -153,19 +186,6 @@ class Game extends amplify_core.Model {
     : id = json['id'],
       _name = json['name'],
       _state = amplify_core.enumFromString<GameState>(json['state'], GameState.values),
-      _results = json['results']  is Map
-        ? (json['results']['items'] is List
-          ? (json['results']['items'] as List)
-              .where((e) => e != null)
-              .map((e) => Result.fromJson(new Map<String, dynamic>.from(e)))
-              .toList()
-          : null)
-        : (json['results'] is List
-          ? (json['results'] as List)
-              .where((e) => e?['serializedData'] != null)
-              .map((e) => Result.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
-              .toList()
-          : null),
       _users = json['users']  is Map
         ? (json['users']['items'] is List
           ? (json['users']['items'] as List)
@@ -179,19 +199,46 @@ class Game extends amplify_core.Model {
               .map((e) => User.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
+      _scoreSheet = json['scoreSheet']  is Map
+        ? (json['scoreSheet']['items'] is List
+          ? (json['scoreSheet']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => ScoreSheet.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['scoreSheet'] is List
+          ? (json['scoreSheet'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => ScoreSheet.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
+      _createdBy = json['createdBy'] != null
+        ? json['createdBy']['serializedData'] != null
+          ? User.fromJson(new Map<String, dynamic>.from(json['createdBy']['serializedData']))
+          : User.fromJson(new Map<String, dynamic>.from(json['createdBy']))
+        : null,
+      _whosTurn = json['whosTurn'] != null
+        ? json['whosTurn']['serializedData'] != null
+          ? User.fromJson(new Map<String, dynamic>.from(json['whosTurn']['serializedData']))
+          : User.fromJson(new Map<String, dynamic>.from(json['whosTurn']))
+        : null,
+      _turnNumber = amplify_core.enumFromString<GameTurnNumber>(json['turnNumber'], GameTurnNumber.values),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'state': amplify_core.enumToString(_state), 'results': _results?.map((Result? e) => e?.toJson()).toList(), 'users': _users?.map((User? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'state': amplify_core.enumToString(_state), 'users': _users?.map((User? e) => e?.toJson()).toList(), 'scoreSheet': _scoreSheet?.map((ScoreSheet? e) => e?.toJson()).toList(), 'createdBy': _createdBy?.toJson(), 'whosTurn': _whosTurn?.toJson(), 'turnNumber': amplify_core.enumToString(_turnNumber), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'name': _name,
     'state': _state,
-    'results': _results,
     'users': _users,
+    'scoreSheet': _scoreSheet,
+    'createdBy': _createdBy,
+    'whosTurn': _whosTurn,
+    'turnNumber': _turnNumber,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -200,12 +247,19 @@ class Game extends amplify_core.Model {
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final STATE = amplify_core.QueryField(fieldName: "state");
-  static final RESULTS = amplify_core.QueryField(
-    fieldName: "results",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Result'));
   static final USERS = amplify_core.QueryField(
     fieldName: "users",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
+  static final SCORESHEET = amplify_core.QueryField(
+    fieldName: "scoreSheet",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'ScoreSheet'));
+  static final CREATEDBY = amplify_core.QueryField(
+    fieldName: "createdBy",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
+  static final WHOSTURN = amplify_core.QueryField(
+    fieldName: "whosTurn",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
+  static final TURNNUMBER = amplify_core.QueryField(fieldName: "turnNumber");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Game";
     modelSchemaDefinition.pluralName = "Games";
@@ -215,10 +269,21 @@ class Game extends amplify_core.Model {
         authStrategy: amplify_core.AuthStrategy.PRIVATE,
         operations: const [
           amplify_core.ModelOperation.CREATE,
-          amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE,
           amplify_core.ModelOperation.READ
+        ]),
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "owner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.UPDATE
         ])
+    ];
+    
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["state"], name: "gamesByState")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
@@ -236,17 +301,37 @@ class Game extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: Game.RESULTS,
-      isRequired: false,
-      ofModelName: 'Result',
-      associatedKey: Result.GAME
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
       key: Game.USERS,
       isRequired: false,
       ofModelName: 'User',
       associatedKey: User.GAME
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Game.SCORESHEET,
+      isRequired: false,
+      ofModelName: 'ScoreSheet',
+      associatedKey: ScoreSheet.GAME
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Game.CREATEDBY,
+      isRequired: false,
+      targetNames: ['createdByUserId'],
+      ofModelName: 'User'
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Game.WHOSTURN,
+      isRequired: false,
+      targetNames: ['whosTurnId'],
+      ofModelName: 'User'
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Game.TURNNUMBER,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.enumeration)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
