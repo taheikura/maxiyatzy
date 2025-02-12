@@ -28,8 +28,12 @@ import 'package:collection/collection.dart';
 class User extends amplify_core.Model {
   static const classType = const _UserModelType();
   final String id;
+  final String? _profileOwner;
+  final String? _name;
   final Game? _game;
-  final List<ResultUser>? _results;
+  final Game? _hosting;
+  final Game? _gameTurn;
+  final List<Score>? _scores;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -46,12 +50,37 @@ class User extends amplify_core.Model {
       );
   }
   
+  String? get profileOwner {
+    return _profileOwner;
+  }
+  
+  String get name {
+    try {
+      return _name!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
   Game? get game {
     return _game;
   }
   
-  List<ResultUser>? get results {
-    return _results;
+  Game? get hosting {
+    return _hosting;
+  }
+  
+  Game? get gameTurn {
+    return _gameTurn;
+  }
+  
+  List<Score>? get scores {
+    return _scores;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -62,13 +91,17 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, game, results, createdAt, updatedAt}): _game = game, _results = results, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, profileOwner, required name, game, hosting, gameTurn, scores, createdAt, updatedAt}): _profileOwner = profileOwner, _name = name, _game = game, _hosting = hosting, _gameTurn = gameTurn, _scores = scores, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, Game? game, List<ResultUser>? results}) {
+  factory User({String? id, String? profileOwner, required String name, Game? game, Game? hosting, Game? gameTurn, List<Score>? scores}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      profileOwner: profileOwner,
+      name: name,
       game: game,
-      results: results != null ? List<ResultUser>.unmodifiable(results) : results);
+      hosting: hosting,
+      gameTurn: gameTurn,
+      scores: scores != null ? List<Score>.unmodifiable(scores) : scores);
   }
   
   bool equals(Object other) {
@@ -80,8 +113,12 @@ class User extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is User &&
       id == other.id &&
+      _profileOwner == other._profileOwner &&
+      _name == other._name &&
       _game == other._game &&
-      DeepCollectionEquality().equals(_results, other._results);
+      _hosting == other._hosting &&
+      _gameTurn == other._gameTurn &&
+      DeepCollectionEquality().equals(_scores, other._scores);
   }
   
   @override
@@ -93,6 +130,8 @@ class User extends amplify_core.Model {
     
     buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("profileOwner=" + "$_profileOwner" + ", ");
+    buffer.write("name=" + "$_name" + ", ");
     buffer.write("game=" + (_game != null ? _game!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -101,74 +140,113 @@ class User extends amplify_core.Model {
     return buffer.toString();
   }
   
-  User copyWith({Game? game, List<ResultUser>? results}) {
+  User copyWith({String? profileOwner, String? name, Game? game, Game? hosting, Game? gameTurn, List<Score>? scores}) {
     return User._internal(
       id: id,
+      profileOwner: profileOwner ?? this.profileOwner,
+      name: name ?? this.name,
       game: game ?? this.game,
-      results: results ?? this.results);
+      hosting: hosting ?? this.hosting,
+      gameTurn: gameTurn ?? this.gameTurn,
+      scores: scores ?? this.scores);
   }
   
   User copyWithModelFieldValues({
+    ModelFieldValue<String?>? profileOwner,
+    ModelFieldValue<String>? name,
     ModelFieldValue<Game?>? game,
-    ModelFieldValue<List<ResultUser>?>? results
+    ModelFieldValue<Game?>? hosting,
+    ModelFieldValue<Game?>? gameTurn,
+    ModelFieldValue<List<Score>?>? scores
   }) {
     return User._internal(
       id: id,
+      profileOwner: profileOwner == null ? this.profileOwner : profileOwner.value,
+      name: name == null ? this.name : name.value,
       game: game == null ? this.game : game.value,
-      results: results == null ? this.results : results.value
+      hosting: hosting == null ? this.hosting : hosting.value,
+      gameTurn: gameTurn == null ? this.gameTurn : gameTurn.value,
+      scores: scores == null ? this.scores : scores.value
     );
   }
   
   User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _profileOwner = json['profileOwner'],
+      _name = json['name'],
       _game = json['game'] != null
         ? json['game']['serializedData'] != null
           ? Game.fromJson(new Map<String, dynamic>.from(json['game']['serializedData']))
           : Game.fromJson(new Map<String, dynamic>.from(json['game']))
         : null,
-      _results = json['results']  is Map
-        ? (json['results']['items'] is List
-          ? (json['results']['items'] as List)
+      _hosting = json['hosting'] != null
+        ? json['hosting']['serializedData'] != null
+          ? Game.fromJson(new Map<String, dynamic>.from(json['hosting']['serializedData']))
+          : Game.fromJson(new Map<String, dynamic>.from(json['hosting']))
+        : null,
+      _gameTurn = json['gameTurn'] != null
+        ? json['gameTurn']['serializedData'] != null
+          ? Game.fromJson(new Map<String, dynamic>.from(json['gameTurn']['serializedData']))
+          : Game.fromJson(new Map<String, dynamic>.from(json['gameTurn']))
+        : null,
+      _scores = json['scores']  is Map
+        ? (json['scores']['items'] is List
+          ? (json['scores']['items'] as List)
               .where((e) => e != null)
-              .map((e) => ResultUser.fromJson(new Map<String, dynamic>.from(e)))
+              .map((e) => Score.fromJson(new Map<String, dynamic>.from(e)))
               .toList()
           : null)
-        : (json['results'] is List
-          ? (json['results'] as List)
+        : (json['scores'] is List
+          ? (json['scores'] as List)
               .where((e) => e?['serializedData'] != null)
-              .map((e) => ResultUser.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .map((e) => Score.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'game': _game?.toJson(), 'results': _results?.map((ResultUser? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'profileOwner': _profileOwner, 'name': _name, 'game': _game?.toJson(), 'hosting': _hosting?.toJson(), 'gameTurn': _gameTurn?.toJson(), 'scores': _scores?.map((Score? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'profileOwner': _profileOwner,
+    'name': _name,
     'game': _game,
-    'results': _results,
+    'hosting': _hosting,
+    'gameTurn': _gameTurn,
+    'scores': _scores,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final PROFILEOWNER = amplify_core.QueryField(fieldName: "profileOwner");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
   static final GAME = amplify_core.QueryField(
     fieldName: "game",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Game'));
-  static final RESULTS = amplify_core.QueryField(
-    fieldName: "results",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'ResultUser'));
+  static final HOSTING = amplify_core.QueryField(
+    fieldName: "hosting",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Game'));
+  static final GAMETURN = amplify_core.QueryField(
+    fieldName: "gameTurn",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Game'));
+  static final SCORES = amplify_core.QueryField(
+    fieldName: "scores",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Score'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
-        authStrategy: amplify_core.AuthStrategy.PRIVATE,
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "profileOwner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
         operations: const [
           amplify_core.ModelOperation.CREATE,
           amplify_core.ModelOperation.UPDATE,
@@ -177,7 +255,23 @@ class User extends amplify_core.Model {
         ])
     ];
     
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["profileOwner"], name: "usersByProfileOwner")
+    ];
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.PROFILEOWNER,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.NAME,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: User.GAME,
@@ -186,11 +280,25 @@ class User extends amplify_core.Model {
       ofModelName: 'Game'
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: User.RESULTS,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+      key: User.HOSTING,
       isRequired: false,
-      ofModelName: 'ResultUser',
-      associatedKey: ResultUser.USER
+      ofModelName: 'Game',
+      associatedKey: Game.CREATEDBY
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
+      key: User.GAMETURN,
+      isRequired: false,
+      ofModelName: 'Game',
+      associatedKey: Game.WHOSTURN
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: User.SCORES,
+      isRequired: false,
+      ofModelName: 'Score',
+      associatedKey: Score.USER
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

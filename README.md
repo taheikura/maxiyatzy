@@ -12,7 +12,8 @@ Maksi Jatsi
   - [Use per-developer cloud sandbox](#use-per-developer-cloud-sandbox)
   - [Update existing project](#update-existing-project)
   - [Authentication](#authentication)
-  - [Deploy sandbox and run](#deploy-sandbox-and-run)
+  - [Deploy sandbox](#deploy-sandbox)
+  - [run](#run)
 - [Data model](#data-model)
   - [Connect application code to data backend](#connect-application-code-to-data-backend)
 
@@ -71,8 +72,10 @@ amplify_authenticator: ^2.0.0
 
 Authentication UI is ready after lib/main.dart is updated to use Amplify UI components.
 
-## Deploy sandbox and run
+## Deploy sandbox
 >npx ampx sandbox --outputs-format dart --outputs-out-dir lib\
+
+## run
 flutter run
 
 # Data model
@@ -86,7 +89,7 @@ flutter pub outdated
 -Use Version Lens extension to upgrade
 
 Modify amplify/data/resource.ts
-Re-Deploy sandbox
+Re-Deploy sandbox to create the models based on the data resource.
 Once the cloud sandbox is up and running, it will create an amplify_outputs.dart file, which includes connection information to the backend,
 like your API endpoint URL and API key.
 
